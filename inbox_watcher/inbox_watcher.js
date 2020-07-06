@@ -1,16 +1,9 @@
 const fs = require("fs");
 const buffer = require("buffer");
 const base64 = require('base64-stream')
-
-const inboxConf = {
-    user: '',
-    password: '',
-    host: '',
-    port: 42,
-    tls: true
-};
 const Imap = require("imap");
-const imap = new Imap(inboxConf);
+
+let imap;
 
 const FETCH_BODY = "HEADER.FIELDS (FROM TO SUBJECT DATE)";
 
@@ -145,8 +138,16 @@ function fetchMails(callback) {
     });
 }
 
-exports.listen = callback => {
+exports.listen = (inboxConf, callback) => {
     return new Promise((resolve, reject) => {
+        if (!imap) {
+            try {
+                imap = new Imap(inboxConf);
+            } catch (error) {
+                reject(error);
+            }
+        }
+
         imap.once("ready", function() {
             imap.openBox('INBOX', false, function(err, box) {
                 if (err)
