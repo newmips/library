@@ -4,7 +4,7 @@
 
 # newmips-library
 
-This repository is used to store and share useful and/or reusable code.
+This repository is used to store and share useful and reusable code.
 <br>
 <br>
 Code pushed to this repository is expected to have a README.md file or meaningful comments explaining how and what it does.
