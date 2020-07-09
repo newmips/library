@@ -102,19 +102,19 @@ router.post('/import', function(req, res) {
 	upload(req, res, err => {
 		if (err)
 			return console.error(err);
-		import('E_group', req.file.buffer.toString()).then(result => {
-            if (result.errors.length) {
-                // No need to send all errors, reduce data sent
-                if (result.errors.length > 100)
-                    result.errors = result.errors.slice(0, 100);
-                console.log(result.errors);
+	    	import('E_group', req.file.buffer.toString()).then(result => {
+            		if (result.errors.length) {
+                		// No need to send all errors, reduce data sent
+                		if (result.errors.length > 100)
+                		    result.errors = result.errors.slice(0, 100);
+                		console.log(result.errors);
 				//	[
 				//		{message: `La colonne fk_id_officer réference un ID inexistant de l'entité User`, row: 1}
 				//		{message: `La valeur 'Benoit' n'est pas valide pour la colonne Id. Un type 'integer' est attendu`, row: 2}
 				//	]
-            }
-            else
-            	console.log('Success');
+            		}
+            		else
+            			console.log('Success');
 		}).catch(err => {
 			console.log("Unkown error")
 		});
