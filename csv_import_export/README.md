@@ -102,7 +102,7 @@ router.post('/import', function(req, res) {
 	upload(req, res, err => {
 		if (err)
 			return console.error(err);
-		import.import('E_group', req.file.buffer.toString()).then(result => {
+		import('E_group', req.file.buffer.toString()).then(result => {
             if (result.errors.length) {
                 // No need to send all errors, reduce data sent
                 if (result.errors.length > 100)
