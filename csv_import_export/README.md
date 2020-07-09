@@ -28,9 +28,9 @@ All attributes will be exported.
 ### Example
 
 <pre>
-const import_export = require('../utils/csv_import_export');
+const { export } = require('../utils/csv_import_export');<br>
 router.get('/export_groups', function(req, res) {
-	import_export.export('E_group').then(filepath => {
+	export('E_group').then(filepath => {
 		res.download(filepath); // __dirname+'/../files/export/export_E_group_123731387.csv'
 	}).catch(err => {
 		res.status(500).send(err);
@@ -97,12 +97,12 @@ Each error entry provide a simplified and translated error message, as well as t
 ### Example
 
 <pre>
-const import_export = require('../utils/csv_import_export');<br>
+const { import } = require('../utils/csv_import_export');<br>
 router.post('/import', function(req, res) {
 	upload(req, res, err => {
 		if (err)
 			return console.error(err);
-		import_export.import('E_group', req.file.buffer.toString()).then(result => {
+		import.import('E_group', req.file.buffer.toString()).then(result => {
             if (result.errors.length) {
                 // No need to send all errors, reduce data sent
                 if (result.errors.length > 100)
