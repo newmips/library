@@ -10,6 +10,7 @@ This module allows a node process to listen for new mail event on a specified ma
 <br>
 It will fetch any incoming mail and its attachments and call the provided callback with the mail content and attachments.
 <br>
+It does not need to run in a newmips environment.
 
 ## Usage
 
