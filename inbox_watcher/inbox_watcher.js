@@ -2,6 +2,8 @@ const fs = require("fs");
 const buffer = require("buffer");
 const base64 = require('base64-stream')
 const Imap = require("imap");
+const utf8 = require('utf8');
+const quotedPrintable = require('quoted-printable');
 
 let imap;
 
@@ -53,12 +55,13 @@ function buildAttachment(mailObject, attachment, msg, seqno) {
 
 function buildMail(mail, msg, seqno) {
     return new Promise((resolve, reject) => {
+        let struct;
         const attachmentPromises = [];
         msg.on("body", function(stream, info) {
             // Build body
             if (info.which === '1') {
                 stream.on('data', function(chunk) {
-                    mail.body += chunk.toString('utf8')
+                    mail.body += chunk;
                 });
             }
             // Build header and parse it to object
@@ -72,6 +75,7 @@ function buildMail(mail, msg, seqno) {
             }
         });
         msg.once("attributes", function(attrs) {
+            struct = attrs.struct;
             var attachments = findAttachmentParts(attrs.struct);
             // Fetch attachments
             for (var i = 0, len = attachments.length; i < len; ++i) {
@@ -89,6 +93,18 @@ function buildMail(mail, msg, seqno) {
             }
         });
         msg.once("end", function() {
+            try {
+                if (struct[1] && struct[1][0] && struct[1][0].encoding == 'BASE64')
+                    mail.body = new Buffer(mail.body, 'base64').toString('utf8');
+                else if (struct[2] && struct[2][0] && struct[2][0].encoding && struct[2][0].encoding.toUpperCase() == "QUOTED-PRINTABLE")
+                    mail.body = utf8.decode(quotedPrintable.decode(mail.body));
+                else
+                    mail.body = mail.body.toString('utf8');
+            } catch(err) {
+                console.error("Couldn't decode mail body");
+                return reject(err);
+            }
+
             Promise.all(attachmentPromises).then(_ => {
                 console.log(`Mail ${seqno} done`);
                 resolve(mail);
